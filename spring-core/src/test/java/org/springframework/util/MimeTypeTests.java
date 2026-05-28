@@ -32,6 +32,7 @@ import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * Tests for {@link MimeType}.
@@ -98,13 +99,29 @@ class MimeTypeTests {
 	}
 
 	@Test
-	void parseQuotedSeparator() {
+	void parseQuotedParameterValue() {
 		String s = "application/xop+xml;charset=utf-8;type=\"application/soap+xml;action=\\\"https://x.y.z\\\"\"";
 		MimeType mimeType = MimeType.valueOf(s);
 		assertThat(mimeType.getType()).as("Invalid type").isEqualTo("application");
 		assertThat(mimeType.getSubtype()).as("Invalid subtype").isEqualTo("xop+xml");
 		assertThat(mimeType.getCharset()).as("Invalid charset").isEqualTo(StandardCharsets.UTF_8);
 		assertThat(mimeType.getParameter("type")).isEqualTo("\"application/soap+xml;action=\\\"https://x.y.z\\\"\"");
+	}
+
+	@Test
+	void parseParameterWithQuotedPair() {
+		String s = "text/plain;twelve=\"1\\\"2\"";
+		MimeType mimeType = MimeType.valueOf(s);
+		assertThat(mimeType.getType()).as("Invalid type").isEqualTo("text");
+		assertThat(mimeType.getSubtype()).as("Invalid subtype").isEqualTo("plain");
+		assertThat(mimeType.getParameter("twelve")).isEqualTo("\"1\\\"2\"");
+	}
+
+	@Test
+	void rejectsDuplicateParameter() {
+		String s = "text/plain;dupe=\"1\";dupe=\"2\"";
+		assertThatThrownBy(() -> MimeType.valueOf(s)).isInstanceOf(InvalidMimeTypeException.class)
+				.hasMessageContaining("Invalid mime type \"text/plain;dupe=\"1\";dupe=\"2\"\": duplicate parameter 'dupe=\"2\"'");
 	}
 
 	@Test
