@@ -125,6 +125,12 @@ public class HttpHeaders implements Serializable {
 	 */
 	public static final String ACCEPT_PATCH = "Accept-Patch";
 	/**
+	 * The HTTP {@code Accept-Query} header field name.
+	 * @since 7.1
+	 * @see <a href="https://www.rfc-editor.org/rfc/rfc10008.html#section-3">Section 3 of RFC 10008</a>
+	 */
+	public static final String ACCEPT_QUERY = "Accept-Query";
+	/**
 	 * The HTTP {@code Accept-Ranges} header field name.
 	 * @see <a href="https://tools.ietf.org/html/rfc7233#section-2.3">Section 5.3.5 of RFC 7233</a>
 	 */
@@ -647,6 +653,27 @@ public class HttpHeaders implements Serializable {
 	public List<MediaType> getAcceptPatch() {
 		return MediaType.parseMediaTypes(get(ACCEPT_PATCH));
 	}
+
+	/**
+	 * Set the list of acceptable {@linkplain MediaType media types} for
+	 * {@code QUERY} methods, as specified by the {@code Accept-Query} header.
+	 * @since 7.1
+	 */
+	public void setAcceptQuery(List<MediaType> mediaTypes) {
+		set(ACCEPT_QUERY, MediaType.toString(mediaTypes));
+	}
+
+	/**
+	 * Return the list of acceptable {@linkplain MediaType media types} for
+	 * {@code QUERY} methods, as specified by the {@code Accept-Query} header.
+	 * <p>Returns an empty list when the acceptable media types are unspecified.
+	 * @since 7.1
+	 */
+	public List<MediaType> getAcceptQuery() {
+		return MediaType.parseMediaTypes(get(ACCEPT_QUERY));
+	}
+
+
 
 	/**
 	 * Set the (new) value of the {@code Access-Control-Allow-Credentials} response header.
